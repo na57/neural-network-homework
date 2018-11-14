@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf 
+import datetime
 
 from rice_dataset import *
 from tfmodel import *
@@ -65,8 +66,10 @@ def run():
         sess.run(train_op, feed_dict={x: image[0], y: image[1]})
         i += 1
     except tf.errors.OutOfRangeError:
-      print('Done')
       pass
 
 
+start = datetime.datetime.now()
 run()
+end = datetime.datetime.now()
+print('Done. Elapsed time: ', (end-start).seconds)
