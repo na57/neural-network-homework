@@ -1,6 +1,6 @@
 '''
 Rice数据集。
-图片默认文件夹：../datasets/refine_RiceDataset
+图片默认文件夹：./refine_RiceDataset
 
 - allData 返回所有数据
     - 返回值：(x, y)
@@ -23,7 +23,7 @@ SOUND = 1  # 完善粒
 UNSOUND = 0 # 不完善粒
 
 # 加载数据集
-data_dir=os.path.join('..', 'datasets','refine_RiceDataset')
+data_dir=os.path.join('.','refine_RiceDataset')
 sound_dir = os.path.join(data_dir,'**',str(SOUND),'**','*.jpg')
 unsound_dir = os.path.join(data_dir,'**',str(UNSOUND),'**','*.jpg')
 
@@ -89,6 +89,6 @@ def train_dataset_iterator(x_train, y_train,
     return iterator
 
 def validate_dataset_iterator(x_test, y_test):
-    validate_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test)).shuffle(1000).map(_read_image).batch(1000)
+    validate_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test)).shuffle(2000).map(_read_image).batch(2000)
     iterator = validate_ds.make_initializable_iterator()
     return iterator
