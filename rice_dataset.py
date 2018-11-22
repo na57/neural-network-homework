@@ -22,8 +22,8 @@ from sklearn.model_selection import train_test_split
 SOUND = 1  # 完善粒
 UNSOUND = 0 # 不完善粒
 
-MAX_LEFT_PADDING=10
-MAX_TOP_PADDING=10
+MAX_LEFT_PADDING=2
+MAX_TOP_PADDING=2
 
 IMAGE_HEIGHT = 224 - MAX_LEFT_PADDING
 IMAGE_WIDTH = 224 - MAX_TOP_PADDING
@@ -67,7 +67,6 @@ def read_image_tensor(x, left_padding, top_padding):
   image_string = tf.read_file(x)
   image = tf.image.decode_image(image_string)
   image = tf.image.crop_to_bounding_box(image, top_padding, left_padding, IMAGE_HEIGHT, IMAGE_WIDTH)
-  print(image)
   return image
 
 '''
