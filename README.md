@@ -46,3 +46,28 @@ def build_model(inputs, name='my_model'):
 - 精度：0.75
 - 执行时间：166s
 - 结论：使用卷积之后，精度略有上升，但效果不明显
+
+## 实验 #3
+
+- 网络结构
+- 网络结构：
+```python
+def build_model(inputs, name='my_model'):
+  with tf.variable_scope(name):
+    output = inputs
+    output = flatten(output)
+    output = dense(output, 16, name='dense_128_1')
+    output = dense(output, 2, name='output', activation=tf.nn.softmax)
+    return output
+```
+- 主要参数：
+  - lr: 0.001
+  - batch size: 10
+  - loss function: 交叉熵
+  - cost function: L2
+- 精度：0.76
+- 执行时间：316s
+- 样本数量：80k
+- 结论：样本数量增加，网络简单，精度有变化，但不稳定。
+
+
