@@ -22,6 +22,12 @@ from sklearn.model_selection import train_test_split
 SOUND = 1  # 完善粒
 UNSOUND = 0 # 不完善粒
 
+MAX_LEFT_PADDING=10
+MAX_TOP_PADDING=10
+
+IMAGE_HEIGHT = 224 - MAX_LEFT_PADDING
+IMAGE_WIDTH = 224 - MAX_TOP_PADDING
+
 # 加载数据集
 data_dir=os.path.join('.','refine_RiceDataset')
 sound_dir = os.path.join(data_dir,'**',str(SOUND),'**','*.jpg')
@@ -57,10 +63,12 @@ def splitted_data(**kw):
 '''
 根据路径读取图片数据
 '''
-def read_image_tensor(x): 
+def read_image_tensor(x, left_padding, top_padding): 
   image_string = tf.read_file(x)
-  image_decoded = tf.image.decode_image(image_string)
-  return image_decoded
+  image = tf.image.decode_image(image_string)
+  image = tf.image.crop_to_bounding_box(image, top_padding, left_padding, IMAGE_HEIGHT, IMAGE_WIDTH)
+  print(image)
+  return image
 
 '''
 正则化图片数据
@@ -69,19 +77,24 @@ def image_tensor_norm(image_tensor):
   return tf.divide(tf.subtract(tf.cast(image_tensor, tf.float32), 128.), 128.)
 
 
-def _read_image(x, y):
-    image = read_image_tensor(x)
+def _read_image(x, y, lp, tp):
+    image = read_image_tensor(x, lp, tp)
+    image = image_tensor_norm(image)
+    return image, y
+
+def _read_image_validate(x, y):
+    image = read_image_tensor(x, 0, 0)
     image = image_tensor_norm(image)
     return image, y
     
 '''
 创建训练集的Dataset Iterator
 '''
-def train_dataset_iterator(x_train, y_train,
+def train_dataset_iterator(x_train, y_train, left_padding, top_padding,
     batch=1,
-    shuffle=True, shuffle_buffer_size=100):
+    shuffle=True, shuffle_buffer_size=100, train_set_length=0, max_left_padding=0, max_top_padding=0):
 
-    train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+    train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train, left_padding, top_padding))
     if shuffle:
         train_ds = train_ds.shuffle(shuffle_buffer_size)
     train_ds = train_ds.map(_read_image).batch(batch)
@@ -89,6 +102,6 @@ def train_dataset_iterator(x_train, y_train,
     return iterator
 
 def validate_dataset_iterator(x_test, y_test):
-    validate_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test)).shuffle(2000).map(_read_image).batch(2000)
+    validate_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test)).shuffle(2000).map(_read_image_validate).batch(2000)
     iterator = validate_ds.make_initializable_iterator()
     return iterator
