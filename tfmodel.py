@@ -14,15 +14,37 @@ def conv2d(inputs, num_outputs, kernel_size, activation=tf.nn.relu):
 def max_pool2d(inputs, kernel_size):
   return tf.contrib.layers.max_pool2d(inputs, kernel_size)
 
+def dropout(inputs):
+  return tf.contrib.layers.dropout(inputs)
+
 def build_model(inputs, name='my_model'):
   with tf.variable_scope(name):
     output = inputs
-    output = conv2d(output, 8, 3)
-    output = max_pool2d(output, 3)
+
+    # VGG16 前2层
+    # output = conv2d(output, 64, 3)
+    # output = max_pool2d(output, 2)
+    
+    # output = conv2d(output, 128, 3)
+    # output = max_pool2d(output, 2)
+    
+    # output = conv2d(output, 256, 3)
+    # output = conv2d(output, 256, 3)
+    # output = max_pool2d(output, 2)
+    
+    # output = conv2d(output, 512, 3)
+    # output = conv2d(output, 512, 3)
+    # output = max_pool2d(output, 2)
+    
+    # output = conv2d(output, 512, 3)
+    # output = conv2d(output, 512, 3)
+    # output = max_pool2d(output, 2)
+
     output = flatten(output)
-    # output = dense(output, 16, name='dense_128_1')
-    output = dense(output, 32, name='dense_32_1')
-    output = dense(output, 16, name='dense_128_1')
-    output = dense(output, 8, name='dense_8_1')
+
+    # output = dense(output, 4096, name='dense_32_1')
+    # output = dense(output, 4096, name='dense_128_1')
+    # output - dropout(output)
+
     output = dense(output, 2, name='output', activation=tf.nn.softmax)
     return output

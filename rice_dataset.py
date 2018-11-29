@@ -90,17 +90,18 @@ def _read_image_validate(x, y):
 创建训练集的Dataset Iterator
 '''
 def train_dataset_iterator(x_train, y_train, left_padding, top_padding,
-    batch=1,
+    batch=1, epoch=1,
     shuffle=True, shuffle_buffer_size=100, train_set_length=0, max_left_padding=0, max_top_padding=0):
 
-    train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train, left_padding, top_padding))
+    train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train, left_padding, top_padding)).repeat(epoch)
     if shuffle:
         train_ds = train_ds.shuffle(shuffle_buffer_size)
     train_ds = train_ds.map(_read_image).batch(batch)
     iterator = train_ds.make_initializable_iterator()
     return iterator
 
-def validate_dataset_iterator(x_test, y_test):
-    validate_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test)).shuffle(2000).map(_read_image_validate).batch(2000)
+def validate_dataset_iterator(x_test, y_test, batch=20):
+    validate_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test)).shuffle(10000).map(_read_image_validate).batch(batch)
     iterator = validate_ds.make_initializable_iterator()
     return iterator
+
